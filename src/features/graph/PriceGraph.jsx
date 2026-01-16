@@ -41,9 +41,9 @@ const PriceGraph = ({ data }) => {
         sx={{
           p: { xs: 3, sm: 4 },
           borderRadius: 4,
-          border: 1,
-          borderColor: 'divider',
           bgcolor: 'background.paper',
+          backdropFilter: 'blur(15px)',
+          WebkitBackdropFilter: 'blur(15px)',
           mb: 3,
         }}
       >
@@ -69,6 +69,13 @@ const PriceGraph = ({ data }) => {
             sx={{
               color: 'text.secondary',
               fontWeight: 600,
+              px: 2,
+              py: 0.5,
+              borderRadius: 2,
+              bgcolor:
+                theme.palette.mode === 'light'
+                  ? 'rgba(37, 99, 235, 0.1)'
+                  : 'rgba(59, 130, 246, 0.15)',
             }}
           >
             {data.length} result{data.length !== 1 ? 's' : ''}
@@ -85,7 +92,17 @@ const PriceGraph = ({ data }) => {
             textAlign: 'center',
           }}
         >
-          <Box>
+          <Box
+            sx={{
+              p: 2,
+              borderRadius: 2,
+              bgcolor:
+                theme.palette.mode === 'light'
+                  ? 'rgba(16, 185, 129, 0.1)'
+                  : 'rgba(16, 185, 129, 0.15)',
+              backdropFilter: 'blur(10px)',
+            }}
+          >
             <Typography
               variant="caption"
               sx={{
@@ -104,12 +121,23 @@ const PriceGraph = ({ data }) => {
                 fontWeight: 700,
                 color: 'success.main',
                 fontSize: '1rem',
+                mt: 0.5,
               }}
             >
               ${minPrice.toFixed(0)}
             </Typography>
           </Box>
-          <Box>
+          <Box
+            sx={{
+              p: 2,
+              borderRadius: 2,
+              bgcolor:
+                theme.palette.mode === 'light'
+                  ? 'rgba(37, 99, 235, 0.1)'
+                  : 'rgba(59, 130, 246, 0.15)',
+              backdropFilter: 'blur(10px)',
+            }}
+          >
             <Typography
               variant="caption"
               sx={{
@@ -128,12 +156,23 @@ const PriceGraph = ({ data }) => {
                 fontWeight: 700,
                 color: 'primary.main',
                 fontSize: '1rem',
+                mt: 0.5,
               }}
             >
               ${avgPrice.toFixed(0)}
             </Typography>
           </Box>
-          <Box>
+          <Box
+            sx={{
+              p: 2,
+              borderRadius: 2,
+              bgcolor:
+                theme.palette.mode === 'light'
+                  ? 'rgba(239, 68, 68, 0.1)'
+                  : 'rgba(239, 68, 68, 0.15)',
+              backdropFilter: 'blur(10px)',
+            }}
+          >
             <Typography
               variant="caption"
               sx={{
@@ -152,6 +191,7 @@ const PriceGraph = ({ data }) => {
                 fontWeight: 700,
                 color: 'error.main',
                 fontSize: '1rem',
+                mt: 0.5,
               }}
             >
               ${maxPrice.toFixed(0)}
@@ -171,7 +211,7 @@ const PriceGraph = ({ data }) => {
                   <stop
                     offset="5%"
                     stopColor={theme.palette.primary.main}
-                    stopOpacity={0.2}
+                    stopOpacity={0.3}
                   />
                   <stop
                     offset="95%"
@@ -184,6 +224,7 @@ const PriceGraph = ({ data }) => {
                 strokeDasharray="3 3"
                 vertical={false}
                 stroke={theme.palette.divider}
+                opacity={0.5}
               />
               <XAxis dataKey="name" hide />
               <YAxis
@@ -201,7 +242,11 @@ const PriceGraph = ({ data }) => {
                   borderRadius: 12,
                   border: 'none',
                   boxShadow: theme.shadows[3],
-                  backgroundColor: theme.palette.background.paper,
+                  backgroundColor:
+                    theme.palette.mode === 'light'
+                      ? 'rgba(255, 255, 255, 0.95)'
+                      : 'rgba(15, 23, 42, 0.95)',
+                  backdropFilter: 'blur(10px)',
                   color: theme.palette.text.primary,
                 }}
                 formatter={(value) => [`$${value}`, 'Price']}

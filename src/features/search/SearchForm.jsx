@@ -57,16 +57,15 @@ const SearchForm = ({ onSearch }) => {
       role="search"
       aria-label="Flight search form"
       sx={{
-        p: { xs: 3, sm: 4, md: 6 },
+        p: { xs: 3, sm: 4 },
         borderRadius: 4,
-        border: 1,
-        borderColor: 'divider',
         bgcolor: 'background.paper',
-        backdropFilter: 'blur(12px)',
+        backdropFilter: 'blur(15px)',
+        WebkitBackdropFilter: 'blur(15px)',
         boxShadow: (theme) =>
           theme.palette.mode === 'light'
-            ? '0 20px 25px -5px rgb(37 99 235 / 0.1), 0 8px 10px -6px rgb(37 99 235 / 0.1)'
-            : '0 20px 25px -5px rgb(59 130 246 / 0.2), 0 8px 10px -6px rgb(59 130 246 / 0.2)',
+            ? '0 20px 40px rgba(37, 99, 235, 0.15)'
+            : '0 20px 40px rgba(0, 0, 0, 0.4)',
       }}
     >
       <Stack
@@ -159,18 +158,24 @@ const SearchForm = ({ onSearch }) => {
           sx={{
             height: { xs: 48, md: 56 },
             px: { xs: 4, md: 6 },
-            minWidth: { xs: '100%', md: 'auto' },
+            minWidth: { xs: '100%', md: 140 },
             fontSize: { xs: '1rem', md: '1.125rem' },
             fontWeight: 700,
             borderRadius: 3,
             transition: 'all 0.3s ease',
+            background: (theme) =>
+              theme.palette.mode === 'light'
+                ? 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)'
+                : 'linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%)',
             '&:hover': {
               transform: 'translateY(-2px)',
               boxShadow: (theme) =>
-                `0 12px 24px ${theme.palette.primary.main}40`,
+                theme.palette.mode === 'light'
+                  ? '0 12px 28px rgba(37, 99, 235, 0.4)'
+                  : '0 12px 28px rgba(59, 130, 246, 0.5)',
             },
             '&:disabled': {
-              bgcolor: 'action.disabledBackground',
+              background: 'action.disabledBackground',
               color: 'action.disabled',
             },
           }}

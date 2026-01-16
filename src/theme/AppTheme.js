@@ -1,7 +1,7 @@
 import { createTheme } from '@mui/material/styles';
 
 /**
- * Create MUI theme with light and dark mode support
+ * Create MUI theme with glassmorphic design for light and dark mode
  * @param {string} mode - 'light' or 'dark'
  */
 export const getAppTheme = (mode) => {
@@ -10,7 +10,7 @@ export const getAppTheme = (mode) => {
       mode,
       ...(mode === 'light'
         ? {
-            // Light Mode Palette
+            // Light Mode Palette - Soft Pastels
             primary: {
               main: '#2563EB',
               light: '#60A5FA',
@@ -24,14 +24,14 @@ export const getAppTheme = (mode) => {
               contrastText: '#FFFFFF',
             },
             background: {
-              default: '#F8FAFC',
-              paper: '#FFFFFF',
+              default: '#F0F4FF', // Soft blue-tinted background
+              paper: 'rgba(255, 255, 255, 0.6)', // Glass effect
             },
             text: {
               primary: '#0F172A',
-              secondary: '#64748B',
+              secondary: '#475569',
             },
-            divider: '#E2E8F0',
+            divider: 'rgba(148, 163, 184, 0.2)',
             success: {
               main: '#10B981',
               light: '#34D399',
@@ -54,7 +54,7 @@ export const getAppTheme = (mode) => {
             },
           }
         : {
-            // Dark Mode Palette
+            // Dark Mode Palette - Deep Navy/Slate
             primary: {
               main: '#3B82F6',
               light: '#60A5FA',
@@ -68,14 +68,14 @@ export const getAppTheme = (mode) => {
               contrastText: '#FFFFFF',
             },
             background: {
-              default: '#0F172A',
-              paper: '#1E293B',
+              default: '#0A0E1A', // Deep navy background
+              paper: 'rgba(15, 23, 42, 0.7)', // Dark glass effect
             },
             text: {
               primary: '#F1F5F9',
               secondary: '#94A3B8',
             },
-            divider: '#334155',
+            divider: 'rgba(148, 163, 184, 0.15)',
             success: {
               main: '#10B981',
               light: '#34D399',
@@ -163,7 +163,10 @@ export const getAppTheme = (mode) => {
           contained: {
             boxShadow: 'none',
             '&:hover': {
-              boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)',
+              boxShadow:
+                mode === 'light'
+                  ? '0 8px 24px rgba(37, 99, 235, 0.3)'
+                  : '0 8px 24px rgba(59, 130, 246, 0.4)',
             },
           },
         },
@@ -172,6 +175,12 @@ export const getAppTheme = (mode) => {
         styleOverrides: {
           root: {
             backgroundImage: 'none',
+            backdropFilter: 'blur(15px)',
+            WebkitBackdropFilter: 'blur(15px)',
+            border:
+              mode === 'light'
+                ? '1px solid rgba(255, 255, 255, 0.3)'
+                : '1px solid rgba(255, 255, 255, 0.1)',
           },
           outlined: {
             borderWidth: 1,
@@ -183,12 +192,31 @@ export const getAppTheme = (mode) => {
           root: {
             '& .MuiFilledInput-root': {
               borderRadius: 12,
-              backgroundColor: mode === 'light' ? '#F1F5F9' : '#334155',
+              backgroundColor:
+                mode === 'light'
+                  ? 'rgba(241, 245, 249, 0.6)'
+                  : 'rgba(51, 65, 85, 0.6)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              border:
+                mode === 'light'
+                  ? '1px solid rgba(255, 255, 255, 0.3)'
+                  : '1px solid rgba(255, 255, 255, 0.1)',
               '&:hover': {
-                backgroundColor: mode === 'light' ? '#E2E8F0' : '#475569',
+                backgroundColor:
+                  mode === 'light'
+                    ? 'rgba(226, 232, 240, 0.7)'
+                    : 'rgba(71, 85, 105, 0.7)',
               },
               '&.Mui-focused': {
-                backgroundColor: mode === 'light' ? '#E2E8F0' : '#475569',
+                backgroundColor:
+                  mode === 'light'
+                    ? 'rgba(226, 232, 240, 0.8)'
+                    : 'rgba(71, 85, 105, 0.8)',
+                border:
+                  mode === 'light'
+                    ? '1px solid rgba(37, 99, 235, 0.5)'
+                    : '1px solid rgba(59, 130, 246, 0.5)',
               },
             },
           },
@@ -214,4 +242,25 @@ export const getAppTheme = (mode) => {
       },
     },
   });
+};
+
+/**
+ * Get mesh gradient background based on theme mode
+ */
+export const getMeshGradient = (mode) => {
+  if (mode === 'light') {
+    return `
+      radial-gradient(at 0% 0%, rgba(147, 197, 253, 0.3) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(196, 181, 253, 0.3) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(252, 211, 77, 0.2) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, rgba(167, 243, 208, 0.3) 0px, transparent 50%)
+    `;
+  } else {
+    return `
+      radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.2) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.2) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, rgba(16, 185, 129, 0.15) 0px, transparent 50%)
+    `;
+  }
 };

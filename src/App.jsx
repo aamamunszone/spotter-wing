@@ -2,7 +2,6 @@ import React, { useState, useMemo } from 'react';
 import {
   AppBar,
   Box,
-  Chip,
   Container,
   Paper,
   Slider,
@@ -23,8 +22,9 @@ import PriceGraph from './features/graph/PriceGraph';
 import { FlightListSkeleton } from './components/common/LoadingSkeleton';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import ThemeToggle from './components/common/ThemeToggle';
+import LiveStatusIndicator from './components/common/LiveStatusIndicator';
 import { useFlightSearch } from './hooks/useFlightSearch';
-import { getAppTheme } from './theme/AppTheme';
+import { getAppTheme, getMeshGradient } from './theme/AppTheme';
 import { motion, AnimatePresence } from 'motion/react';
 
 const App = () => {
@@ -69,77 +69,122 @@ const App = () => {
             minHeight: '100vh',
             bgcolor: 'background.default',
             color: 'text.primary',
-            transition: 'background-color 0.3s ease, color 0.3s ease',
+            background: getMeshGradient(mode),
+            transition: 'background 0.5s ease',
+            position: 'relative',
           }}
         >
-          {/* Responsive Navbar */}
-          <AppBar
-            position="sticky"
-            elevation={0}
+          {/* Floating Glassmorphic Navbar */}
+          <Box
             sx={{
-              bgcolor: 'background.paper',
-              backdropFilter: 'blur(8px)',
-              borderBottom: 1,
-              borderColor: 'divider',
-              transition: 'all 0.3s ease',
+              position: 'sticky',
+              top: 0,
+              zIndex: 1100,
+              pt: { xs: 1.5, sm: 2 },
+              px: { xs: 2, sm: 3 },
             }}
           >
-            <Container maxWidth="lg">
-              <Toolbar
-                disableGutters
+            <motion.div
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <AppBar
+                position="static"
+                elevation={0}
                 sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  py: { xs: 1, sm: 1.5 },
+                  bgcolor:
+                    mode === 'light'
+                      ? 'rgba(255, 255, 255, 0.1)'
+                      : 'rgba(15, 23, 42, 0.5)',
+                  backdropFilter: 'blur(15px)',
+                  WebkitBackdropFilter: 'blur(15px)',
+                  border:
+                    mode === 'light'
+                      ? '1px solid rgba(255, 255, 255, 0.2)'
+                      : '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: 4,
+                  boxShadow:
+                    mode === 'light'
+                      ? '0 8px 32px rgba(0, 0, 0, 0.1)'
+                      : '0 8px 32px rgba(0, 0, 0, 0.4)',
+                  transition: 'all 0.3s ease',
                 }}
               >
-                {/* Logo */}
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: { xs: 1, sm: 2 },
-                  }}
-                >
-                  <FlightTakeoffIcon
+                <Container maxWidth="lg">
+                  <Toolbar
+                    disableGutters
                     sx={{
-                      color: 'primary.main',
-                      fontSize: { xs: 28, sm: 36 },
-                    }}
-                  />
-                  <Typography
-                    variant="h5"
-                    component="div"
-                    sx={{
-                      fontWeight: 900,
-                      letterSpacing: '-0.02em',
-                      color: 'primary.main',
-                      fontSize: { xs: '1.25rem', sm: '1.5rem' },
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      py: { xs: 1.5, sm: 2 },
+                      minHeight: { xs: 64, sm: 70 },
                     }}
                   >
-                    Spotter-Wing
-                  </Typography>
-                </Box>
+                    {/* Logo */}
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: { xs: 1.5, sm: 2 },
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          width: { xs: 40, sm: 48 },
+                          height: { xs: 40, sm: 48 },
+                          borderRadius: 2.5,
+                          bgcolor: 'primary.main',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          boxShadow: '0 4px 14px rgba(37, 99, 235, 0.4)',
+                        }}
+                      >
+                        <FlightTakeoffIcon
+                          sx={{
+                            color: 'white',
+                            fontSize: { xs: 24, sm: 28 },
+                          }}
+                        />
+                      </Box>
+                      <Typography
+                        variant="h5"
+                        component="div"
+                        sx={{
+                          fontWeight: 900,
+                          letterSpacing: '-0.02em',
+                          background:
+                            mode === 'light'
+                              ? 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)'
+                              : 'linear-gradient(135deg, #60A5FA 0%, #A78BFA 100%)',
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          backgroundClip: 'text',
+                          fontSize: { xs: '1.25rem', sm: '1.5rem' },
+                        }}
+                      >
+                        Spotter-Wing
+                      </Typography>
+                    </Box>
 
-                {/* Right Side: Chip + Theme Toggle */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Chip
-                    label="Spotter Assignment"
-                    variant="outlined"
-                    size="small"
-                    sx={{
-                      display: { xs: 'none', sm: 'flex' },
-                      borderColor: 'divider',
-                      color: 'text.secondary',
-                      fontWeight: 600,
-                    }}
-                  />
-                  <ThemeToggle mode={mode} onToggle={toggleTheme} />
-                </Box>
-              </Toolbar>
-            </Container>
-          </AppBar>
+                    {/* Right Side: Live Status + Theme Toggle */}
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: { xs: 1, sm: 2 },
+                      }}
+                    >
+                      <LiveStatusIndicator />
+                      <ThemeToggle mode={mode} onToggle={toggleTheme} />
+                    </Box>
+                  </Toolbar>
+                </Container>
+              </AppBar>
+            </motion.div>
+          </Box>
 
           <Container
             maxWidth="lg"
@@ -150,7 +195,7 @@ const App = () => {
             <motion.div
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
             >
               <Box
                 sx={{
@@ -186,7 +231,13 @@ const App = () => {
             </motion.div>
 
             {/* Search Form */}
-            <SearchForm onSearch={handleSearch} />
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              <SearchForm onSearch={handleSearch} />
+            </motion.div>
 
             {/* Loading State */}
             {loading && (
@@ -231,7 +282,7 @@ const App = () => {
                     <Box
                       sx={{
                         position: { lg: 'sticky' },
-                        top: { lg: 96 },
+                        top: { lg: 120 },
                         display: 'flex',
                         flexDirection: 'column',
                         gap: 3,
@@ -244,8 +295,6 @@ const App = () => {
                         sx={{
                           p: { xs: 3, sm: 4 },
                           borderRadius: 4,
-                          border: 1,
-                          borderColor: 'divider',
                           bgcolor: 'background.paper',
                         }}
                       >
@@ -266,7 +315,11 @@ const App = () => {
                           onChange={(e, v) => setSortBy(v)}
                           sx={{
                             mb: 3,
-                            bgcolor: 'action.hover',
+                            bgcolor:
+                              mode === 'light'
+                                ? 'rgba(241, 245, 249, 0.5)'
+                                : 'rgba(51, 65, 85, 0.5)',
+                            backdropFilter: 'blur(10px)',
                             borderRadius: 2,
                             p: 0.5,
                             minHeight: 44,
@@ -376,7 +429,7 @@ const App = () => {
                               border: 2,
                               borderStyle: 'dashed',
                               borderColor: 'divider',
-                              bgcolor: 'transparent',
+                              bgcolor: 'background.paper',
                             }}
                           >
                             <Typography sx={{ color: 'text.secondary' }}>
@@ -394,23 +447,29 @@ const App = () => {
 
             {/* Empty State */}
             {!loading && !hasResults && (
-              <Paper
-                variant="outlined"
-                sx={{
-                  mt: { xs: 4, sm: 6, md: 8 },
-                  borderRadius: 4,
-                  border: 2,
-                  borderStyle: 'dashed',
-                  borderColor: 'divider',
-                  p: { xs: 6, sm: 8, md: 12 },
-                  textAlign: 'center',
-                  bgcolor: 'transparent',
-                }}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
               >
-                <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-                  Ready for takeoff. Enter details above to see results.
-                </Typography>
-              </Paper>
+                <Paper
+                  variant="outlined"
+                  sx={{
+                    mt: { xs: 4, sm: 6, md: 8 },
+                    borderRadius: 4,
+                    border: 2,
+                    borderStyle: 'dashed',
+                    borderColor: 'divider',
+                    p: { xs: 6, sm: 8, md: 12 },
+                    textAlign: 'center',
+                    bgcolor: 'background.paper',
+                  }}
+                >
+                  <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+                    Ready for takeoff. Enter details above to see results.
+                  </Typography>
+                </Paper>
+              </motion.div>
             )}
           </Container>
 

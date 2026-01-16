@@ -1,7 +1,12 @@
 import React, { memo } from 'react';
 import { Paper, Typography, Box, Button } from '@mui/material';
 import ConnectingAirportsIcon from '@mui/icons-material/ConnectingAirports';
-import { formatTime, formatDuration, formatPrice, getStopsText } from '../../utils/formatters';
+import {
+  formatTime,
+  formatDuration,
+  formatPrice,
+  getStopsText,
+} from '../../utils/formatters';
 import { motion } from 'motion/react';
 
 const FlightCard = ({ flight }) => {
@@ -39,16 +44,18 @@ const FlightCard = ({ flight }) => {
           mb: 3,
           p: { xs: 3, sm: 4 },
           borderRadius: 3,
-          border: 1,
-          borderColor: 'divider',
           bgcolor: 'background.paper',
+          backdropFilter: 'blur(15px)',
+          WebkitBackdropFilter: 'blur(15px)',
           transition: 'all 0.3s ease',
           '&:hover': {
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
             borderColor: 'primary.main',
             boxShadow: (theme) =>
               theme.palette.mode === 'light'
-                ? '0 20px 25px -5px rgb(37 99 235 / 0.15), 0 8px 10px -6px rgb(37 99 235 / 0.1)'
-                : '0 20px 25px -5px rgb(59 130 246 / 0.3), 0 8px 10px -6px rgb(59 130 246 / 0.2)',
+                ? '0 20px 40px rgba(37, 99, 235, 0.25), 0 0 0 2px rgba(37, 99, 235, 0.3)'
+                : '0 20px 40px rgba(59, 130, 246, 0.35), 0 0 0 2px rgba(59, 130, 246, 0.4)',
           },
         }}
       >
@@ -62,14 +69,25 @@ const FlightCard = ({ flight }) => {
           }}
         >
           {/* Airline Info */}
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 80 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              minWidth: 80,
+            }}
+          >
             <Box
               role="img"
               aria-label={`Airline ${airlineCode}`}
               sx={{
                 width: 56,
                 height: 56,
-                bgcolor: 'action.hover',
+                bgcolor: (theme) =>
+                  theme.palette.mode === 'light'
+                    ? 'rgba(37, 99, 235, 0.1)'
+                    : 'rgba(59, 130, 246, 0.15)',
+                backdropFilter: 'blur(10px)',
                 borderRadius: 2,
                 display: 'flex',
                 alignItems: 'center',
@@ -77,6 +95,10 @@ const FlightCard = ({ flight }) => {
                 fontWeight: 700,
                 color: 'primary.main',
                 fontSize: '1.125rem',
+                border: (theme) =>
+                  theme.palette.mode === 'light'
+                    ? '1px solid rgba(37, 99, 235, 0.2)'
+                    : '1px solid rgba(59, 130, 246, 0.3)',
               }}
             >
               {airlineCode}
@@ -215,7 +237,13 @@ const FlightCard = ({ flight }) => {
               variant="h5"
               sx={{
                 fontWeight: 900,
-                color: 'primary.main',
+                background: (theme) =>
+                  theme.palette.mode === 'light'
+                    ? 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)'
+                    : 'linear-gradient(135deg, #60A5FA 0%, #A78BFA 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
                 fontSize: { xs: '1.5rem', sm: '1.75rem' },
               }}
               aria-label={`Price ${formatPrice(price.total, price.currency)}`}
@@ -232,10 +260,16 @@ const FlightCard = ({ flight }) => {
                 py: 1.5,
                 fontSize: '0.95rem',
                 transition: 'all 0.2s ease',
+                background: (theme) =>
+                  theme.palette.mode === 'light'
+                    ? 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)'
+                    : 'linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%)',
                 '&:hover': {
                   transform: 'translateY(-2px)',
                   boxShadow: (theme) =>
-                    `0 8px 16px ${theme.palette.primary.main}40`,
+                    theme.palette.mode === 'light'
+                      ? '0 8px 20px rgba(37, 99, 235, 0.4)'
+                      : '0 8px 20px rgba(59, 130, 246, 0.5)',
                 },
               }}
             >

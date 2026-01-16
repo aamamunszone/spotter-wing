@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Paper, Skeleton } from '@mui/material';
 
 /**
- * Loading skeleton for flight cards
+ * Loading skeleton for flight cards with glassmorphic design
  */
 export const FlightCardSkeleton = () => {
   return (
@@ -12,9 +12,9 @@ export const FlightCardSkeleton = () => {
         mb: 3,
         p: { xs: 3, sm: 4 },
         borderRadius: 3,
-        border: 1,
-        borderColor: 'divider',
         bgcolor: 'background.paper',
+        backdropFilter: 'blur(15px)',
+        WebkitBackdropFilter: 'blur(15px)',
       }}
     >
       <Box

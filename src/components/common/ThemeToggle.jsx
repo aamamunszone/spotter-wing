@@ -5,7 +5,7 @@ import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 
 /**
- * Theme toggle button with smooth animation
+ * Theme toggle button with smooth rotation animation
  */
 const ThemeToggle = ({ mode, onToggle }) => {
   const isDark = mode === 'dark';
@@ -19,11 +19,21 @@ const ThemeToggle = ({ mode, onToggle }) => {
           width: 44,
           height: 44,
           borderRadius: 2,
-          bgcolor: 'background.paper',
-          border: 1,
-          borderColor: 'divider',
+          bgcolor:
+            mode === 'light'
+              ? 'rgba(255, 255, 255, 0.3)'
+              : 'rgba(15, 23, 42, 0.5)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+          border:
+            mode === 'light'
+              ? '1px solid rgba(255, 255, 255, 0.4)'
+              : '1px solid rgba(255, 255, 255, 0.15)',
           '&:hover': {
-            bgcolor: 'action.hover',
+            bgcolor:
+              mode === 'light'
+                ? 'rgba(255, 255, 255, 0.5)'
+                : 'rgba(15, 23, 42, 0.7)',
             transform: 'scale(1.05)',
           },
           transition: 'all 0.2s ease-in-out',
@@ -32,15 +42,18 @@ const ThemeToggle = ({ mode, onToggle }) => {
         <motion.div
           initial={false}
           animate={{
-            scale: [0.8, 1.2, 1],
             rotate: isDark ? 180 : 0,
+            scale: [1, 1.2, 1],
           }}
-          transition={{ duration: 0.3 }}
+          transition={{
+            rotate: { duration: 0.5, ease: 'easeInOut' },
+            scale: { duration: 0.3 },
+          }}
         >
           {isDark ? (
-            <DarkModeIcon sx={{ color: 'primary.main' }} />
+            <DarkModeIcon sx={{ color: '#60A5FA' }} />
           ) : (
-            <LightModeIcon sx={{ color: 'warning.main' }} />
+            <LightModeIcon sx={{ color: '#F59E0B' }} />
           )}
         </motion.div>
       </IconButton>
