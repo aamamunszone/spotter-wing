@@ -1,12 +1,8 @@
 import React, { memo } from 'react';
 import { Paper, Typography, Box, Button } from '@mui/material';
 import ConnectingAirportsIcon from '@mui/icons-material/ConnectingAirports';
-import {
-  formatTime,
-  formatDuration,
-  formatPrice,
-  getStopsText,
-} from '../../utils/formatters';
+import { formatTime, formatDuration, formatPrice, getStopsText } from '../../utils/formatters';
+import { motion } from 'motion/react';
 
 const FlightCard = ({ flight }) => {
   // Safely extract flight data with fallbacks
@@ -31,106 +27,224 @@ const FlightCard = ({ flight }) => {
   const stopsText = getStopsText(segments);
 
   return (
-    <Paper
-      elevation={0}
-      className="mb-4 p-5 rounded-2xl border border-neutral-200 hover:border-blue-400 transition-all duration-300 hover:shadow-lg"
-      role="article"
-      aria-label={`Flight from ${departure.iataCode} to ${arrival.iataCode}`}
+    <motion.div
+      whileHover={{ scale: 1.02, y: -4 }}
+      transition={{ duration: 0.2 }}
     >
-      <Box className="flex flex-col md:flex-row justify-between items-center gap-6">
-        {/* Airline Info */}
-        <Box className="flex flex-col items-center">
-          <div
-            className="w-12 h-12 bg-neutral-100 rounded-full flex items-center justify-center font-bold text-blue-600"
-            role="img"
-            aria-label={`Airline ${airlineCode}`}
-          >
-            {airlineCode}
-          </div>
-          <Typography variant="caption" className="mt-1 font-bold">
-            {airlineCode}
-          </Typography>
-        </Box>
-
-        {/* Journey Details */}
-        <Box className="flex-1 flex justify-center items-center gap-8 w-full">
-          <Box className="text-center">
-            <Typography
-              variant="h6"
-              className="font-bold"
-              aria-label="Departure airport"
+      <Paper
+        elevation={0}
+        role="article"
+        aria-label={`Flight from ${departure.iataCode} to ${arrival.iataCode}`}
+        sx={{
+          mb: 3,
+          p: { xs: 3, sm: 4 },
+          borderRadius: 3,
+          border: 1,
+          borderColor: 'divider',
+          bgcolor: 'background.paper',
+          transition: 'all 0.3s ease',
+          '&:hover': {
+            borderColor: 'primary.main',
+            boxShadow: (theme) =>
+              theme.palette.mode === 'light'
+                ? '0 20px 25px -5px rgb(37 99 235 / 0.15), 0 8px 10px -6px rgb(37 99 235 / 0.1)'
+                : '0 20px 25px -5px rgb(59 130 246 / 0.3), 0 8px 10px -6px rgb(59 130 246 / 0.2)',
+          },
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            justifyContent: 'space-between',
+            alignItems: { xs: 'stretch', md: 'center' },
+            gap: { xs: 3, md: 4 },
+          }}
+        >
+          {/* Airline Info */}
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 80 }}>
+            <Box
+              role="img"
+              aria-label={`Airline ${airlineCode}`}
+              sx={{
+                width: 56,
+                height: 56,
+                bgcolor: 'action.hover',
+                borderRadius: 2,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 700,
+                color: 'primary.main',
+                fontSize: '1.125rem',
+              }}
             >
-              {departure.iataCode || 'N/A'}
-            </Typography>
+              {airlineCode}
+            </Box>
             <Typography
               variant="caption"
-              className="text-neutral-500"
-              aria-label="Departure time"
+              sx={{
+                mt: 1,
+                fontWeight: 700,
+                color: 'text.secondary',
+              }}
             >
-              {departure.at ? formatTime(departure.at) : 'N/A'}
+              {airlineCode}
             </Typography>
           </Box>
 
-          <Box className="flex-1 flex flex-col items-center relative">
-            <Typography
-              variant="caption"
-              className="text-blue-500 font-bold mb-1"
-              aria-label={`Flight has ${stopsText}`}
+          {/* Journey Details */}
+          <Box
+            sx={{
+              flex: 1,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: { xs: 3, sm: 4, md: 6 },
+            }}
+          >
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 700,
+                  color: 'text.primary',
+                }}
+                aria-label="Departure airport"
+              >
+                {departure.iataCode || 'N/A'}
+              </Typography>
+              <Typography
+                variant="caption"
+                sx={{ color: 'text.secondary' }}
+                aria-label="Departure time"
+              >
+                {departure.at ? formatTime(departure.at) : 'N/A'}
+              </Typography>
+            </Box>
+
+            <Box
+              sx={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                position: 'relative',
+              }}
             >
-              {stopsText}
-            </Typography>
-            <div
-              className="w-full h-0.5 bg-neutral-200 relative"
-              aria-hidden="true"
-            >
-              <ConnectingAirportsIcon className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-neutral-300 bg-white px-1" />
-            </div>
-            <Typography
-              variant="caption"
-              className="mt-1 text-neutral-400"
-              aria-label={`Flight duration ${formatDuration(outbound.duration)}`}
-            >
-              {formatDuration(outbound.duration)}
-            </Typography>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'primary.main',
+                  fontWeight: 700,
+                  mb: 1,
+                  fontSize: '0.75rem',
+                }}
+                aria-label={`Flight has ${stopsText}`}
+              >
+                {stopsText}
+              </Typography>
+              <Box
+                sx={{
+                  width: '100%',
+                  height: 2,
+                  bgcolor: 'divider',
+                  position: 'relative',
+                }}
+                aria-hidden="true"
+              >
+                <ConnectingAirportsIcon
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    color: 'text.secondary',
+                    bgcolor: 'background.paper',
+                    px: 1,
+                    fontSize: '1.25rem',
+                  }}
+                />
+              </Box>
+              <Typography
+                variant="caption"
+                sx={{
+                  mt: 1,
+                  color: 'text.secondary',
+                  fontSize: '0.75rem',
+                }}
+                aria-label={`Flight duration ${formatDuration(outbound.duration)}`}
+              >
+                {formatDuration(outbound.duration)}
+              </Typography>
+            </Box>
+
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 700,
+                  color: 'text.primary',
+                }}
+                aria-label="Arrival airport"
+              >
+                {arrival.iataCode || 'N/A'}
+              </Typography>
+              <Typography
+                variant="caption"
+                sx={{ color: 'text.secondary' }}
+                aria-label="Arrival time"
+              >
+                {arrival.at ? formatTime(arrival.at) : 'N/A'}
+              </Typography>
+            </Box>
           </Box>
 
-          <Box className="text-center">
+          {/* Price & Action */}
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'row', md: 'column' },
+              alignItems: { xs: 'center', md: 'flex-end' },
+              justifyContent: { xs: 'space-between', md: 'center' },
+              minWidth: { md: 140 },
+              gap: 2,
+            }}
+          >
             <Typography
-              variant="h6"
-              className="font-bold"
-              aria-label="Arrival airport"
+              variant="h5"
+              sx={{
+                fontWeight: 900,
+                color: 'primary.main',
+                fontSize: { xs: '1.5rem', sm: '1.75rem' },
+              }}
+              aria-label={`Price ${formatPrice(price.total, price.currency)}`}
             >
-              {arrival.iataCode || 'N/A'}
+              {formatPrice(price.total, price.currency)}
             </Typography>
-            <Typography
-              variant="caption"
-              className="text-neutral-500"
-              aria-label="Arrival time"
+            <Button
+              variant="contained"
+              aria-label={`Select flight from ${departure.iataCode} to ${arrival.iataCode} for ${formatPrice(price.total, price.currency)}`}
+              sx={{
+                borderRadius: 2,
+                fontWeight: 700,
+                px: { xs: 4, sm: 5 },
+                py: 1.5,
+                fontSize: '0.95rem',
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  transform: 'translateY(-2px)',
+                  boxShadow: (theme) =>
+                    `0 8px 16px ${theme.palette.primary.main}40`,
+                },
+              }}
             >
-              {arrival.at ? formatTime(arrival.at) : 'N/A'}
-            </Typography>
+              Select
+            </Button>
           </Box>
         </Box>
-
-        {/* Price & Action */}
-        <Box className="flex flex-col items-end min-w-30">
-          <Typography
-            variant="h5"
-            className="font-black text-blue-600"
-            aria-label={`Price ${formatPrice(price.total, price.currency)}`}
-          >
-            {formatPrice(price.total, price.currency)}
-          </Typography>
-          <Button
-            variant="contained"
-            className="mt-2 bg-blue-600 rounded-lg normal-case font-bold px-6 hover:bg-blue-700"
-            aria-label={`Select flight from ${departure.iataCode} to ${arrival.iataCode} for ${formatPrice(price.total, price.currency)}`}
-          >
-            Select
-          </Button>
-        </Box>
-      </Box>
-    </Paper>
+      </Paper>
+    </motion.div>
   );
 };
 

@@ -54,11 +54,26 @@ const SearchForm = ({ onSearch }) => {
   return (
     <Paper
       elevation={0}
-      className="p-4 md:p-8 rounded-4xl border border-neutral-200 bg-white/50 backdrop-blur-xl shadow-2xl shadow-blue-500/10"
       role="search"
       aria-label="Flight search form"
+      sx={{
+        p: { xs: 3, sm: 4, md: 6 },
+        borderRadius: 4,
+        border: 1,
+        borderColor: 'divider',
+        bgcolor: 'background.paper',
+        backdropFilter: 'blur(12px)',
+        boxShadow: (theme) =>
+          theme.palette.mode === 'light'
+            ? '0 20px 25px -5px rgb(37 99 235 / 0.1), 0 8px 10px -6px rgb(37 99 235 / 0.1)'
+            : '0 20px 25px -5px rgb(59 130 246 / 0.2), 0 8px 10px -6px rgb(59 130 246 / 0.2)',
+      }}
     >
-      <Stack direction={{ xs: 'column', lg: 'row' }} spacing={2}>
+      <Stack
+        direction={{ xs: 'column', md: 'row' }}
+        spacing={{ xs: 2, md: 2 }}
+        sx={{ alignItems: { md: 'flex-end' } }}
+      >
         <Autocomplete
           fullWidth
           options={options.from}
@@ -141,10 +156,27 @@ const SearchForm = ({ onSearch }) => {
           onClick={handleSearch}
           disabled={!formData.from || !formData.to || !formData.date}
           aria-label="Search flights"
-          className="h-14 px-12 bg-blue-600 hover:bg-black rounded-xl transition-all duration-500 font-bold text-lg disabled:bg-neutral-300"
+          sx={{
+            height: { xs: 48, md: 56 },
+            px: { xs: 4, md: 6 },
+            minWidth: { xs: '100%', md: 'auto' },
+            fontSize: { xs: '1rem', md: '1.125rem' },
+            fontWeight: 700,
+            borderRadius: 3,
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              transform: 'translateY(-2px)',
+              boxShadow: (theme) =>
+                `0 12px 24px ${theme.palette.primary.main}40`,
+            },
+            '&:disabled': {
+              bgcolor: 'action.disabledBackground',
+              color: 'action.disabled',
+            },
+          }}
         >
           <SearchIcon aria-hidden="true" />
-          <span className="ml-2 hidden sm:inline">Search</span>
+          <span style={{ marginLeft: 8 }}>Search</span>
         </Button>
       </Stack>
     </Paper>

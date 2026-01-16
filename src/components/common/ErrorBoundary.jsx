@@ -27,23 +27,62 @@ class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <Box className="min-h-screen bg-neutral-50 flex items-center justify-center p-4">
-          <Paper className="p-8 rounded-3xl max-w-md text-center">
+        <Box
+          sx={{
+            minHeight: '100vh',
+            bgcolor: 'background.default',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            p: 2,
+          }}
+        >
+          <Paper
+            sx={{
+              p: { xs: 4, sm: 6, md: 8 },
+              borderRadius: 4,
+              maxWidth: 480,
+              textAlign: 'center',
+              border: 1,
+              borderColor: 'divider',
+            }}
+          >
             <ErrorOutlineIcon
-              className="text-red-500 mb-4"
-              sx={{ fontSize: 64 }}
+              sx={{
+                color: 'error.main',
+                mb: 3,
+                fontSize: 64,
+              }}
             />
-            <Typography variant="h5" className="font-bold mb-2">
+            <Typography
+              variant="h5"
+              sx={{
+                fontWeight: 700,
+                mb: 2,
+                color: 'text.primary',
+              }}
+            >
               Oops! Something went wrong
             </Typography>
-            <Typography variant="body2" className="text-neutral-500 mb-6">
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'text.secondary',
+                mb: 4,
+              }}
+            >
               We encountered an unexpected error. Don't worry, your data is
               safe.
             </Typography>
             <Button
               variant="contained"
               onClick={this.handleReset}
-              className="bg-blue-600 rounded-lg normal-case font-bold"
+              sx={{
+                borderRadius: 2,
+                fontWeight: 700,
+                px: 4,
+                py: 1.5,
+              }}
             >
               Reload Application
             </Button>

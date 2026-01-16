@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   AppBar,
   Box,
@@ -12,17 +12,33 @@ import {
   Snackbar,
   Tabs,
   Tab,
+  CssBaseline,
+  useMediaQuery,
 } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import FlightTakeoffIcon from '@mui/icons-material/FlightTakeoff';
 import SearchForm from './features/search/SearchForm';
 import FlightCard from './features/results/FlightCard';
 import PriceGraph from './features/graph/PriceGraph';
 import { FlightListSkeleton } from './components/common/LoadingSkeleton';
 import ErrorBoundary from './components/common/ErrorBoundary';
+import ThemeToggle from './components/common/ThemeToggle';
 import { useFlightSearch } from './hooks/useFlightSearch';
+import { getAppTheme } from './theme/AppTheme';
 import { motion, AnimatePresence } from 'motion/react';
 
 const App = () => {
+  // Theme state
+  const [mode, setMode] = useState('light');
+  const theme = useMemo(() => getAppTheme(mode), [mode]);
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  // Toggle theme
+  const toggleTheme = () => {
+    setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+  };
+
+  // Flight search state
   const {
     flights,
     loading,
@@ -35,7 +51,7 @@ const App = () => {
     hasResults,
   } = useFlightSearch();
 
-  const [showError, setShowError] = React.useState(false);
+  const [showError, setShowError] = useState(false);
 
   // Show error notification when error changes
   React.useEffect(() => {
@@ -45,232 +61,378 @@ const App = () => {
   }, [error]);
 
   return (
-    <ErrorBoundary>
-      <Box className="min-h-screen bg-neutral-50 antialiased text-neutral-900">
-        {/* Navbar */}
-        <AppBar
-          position="sticky"
-          elevation={0}
-          className="border-b border-neutral-200 bg-white/80 backdrop-blur-md"
-          sx={{ bgcolor: 'rgba(255, 255, 255, 0.8)' }}
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <ErrorBoundary>
+        <Box
+          sx={{
+            minHeight: '100vh',
+            bgcolor: 'background.default',
+            color: 'text.primary',
+            transition: 'background-color 0.3s ease, color 0.3s ease',
+          }}
         >
-          <Container maxWidth="lg">
-            <Toolbar disableGutters className="flex justify-between">
-              <Box className="flex items-center gap-2">
-                <FlightTakeoffIcon className="text-blue-600" fontSize="large" />
-                <Typography
-                  variant="h5"
-                  className="font-black tracking-tight text-blue-600"
-                  component="div"
+          {/* Responsive Navbar */}
+          <AppBar
+            position="sticky"
+            elevation={0}
+            sx={{
+              bgcolor: 'background.paper',
+              backdropFilter: 'blur(8px)',
+              borderBottom: 1,
+              borderColor: 'divider',
+              transition: 'all 0.3s ease',
+            }}
+          >
+            <Container maxWidth="lg">
+              <Toolbar
+                disableGutters
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  py: { xs: 1, sm: 1.5 },
+                }}
+              >
+                {/* Logo */}
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: { xs: 1, sm: 2 },
+                  }}
                 >
-                  Spotter-Wing
+                  <FlightTakeoffIcon
+                    sx={{
+                      color: 'primary.main',
+                      fontSize: { xs: 28, sm: 36 },
+                    }}
+                  />
+                  <Typography
+                    variant="h5"
+                    component="div"
+                    sx={{
+                      fontWeight: 900,
+                      letterSpacing: '-0.02em',
+                      color: 'primary.main',
+                      fontSize: { xs: '1.25rem', sm: '1.5rem' },
+                    }}
+                  >
+                    Spotter-Wing
+                  </Typography>
+                </Box>
+
+                {/* Right Side: Chip + Theme Toggle */}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Chip
+                    label="Spotter Assignment"
+                    variant="outlined"
+                    size="small"
+                    sx={{
+                      display: { xs: 'none', sm: 'flex' },
+                      borderColor: 'divider',
+                      color: 'text.secondary',
+                      fontWeight: 600,
+                    }}
+                  />
+                  <ThemeToggle mode={mode} onToggle={toggleTheme} />
+                </Box>
+              </Toolbar>
+            </Container>
+          </AppBar>
+
+          <Container
+            maxWidth="lg"
+            component="main"
+            sx={{ py: { xs: 4, sm: 6, md: 8 } }}
+          >
+            {/* Hero Section */}
+            <motion.div
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Box
+                sx={{
+                  mb: { xs: 4, sm: 6, md: 8 },
+                  textAlign: { xs: 'center', sm: 'left' },
+                }}
+              >
+                <Typography
+                  variant="h3"
+                  sx={{
+                    fontWeight: 800,
+                    letterSpacing: '-0.02em',
+                    color: 'text.primary',
+                    fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
+                    mb: 2,
+                  }}
+                >
+                  Where to next?
+                </Typography>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    color: 'text.secondary',
+                    fontWeight: 400,
+                    maxWidth: '42rem',
+                    fontSize: { xs: '1rem', sm: '1.125rem', md: '1.25rem' },
+                  }}
+                >
+                  Find the best flight deals with real-time price trends and
+                  advanced analytics.
                 </Typography>
               </Box>
+            </motion.div>
 
-              <Chip
-                label="Spotter Assignment • Jan 2026"
-                variant="outlined"
-                size="small"
-                className="hidden sm:flex border-neutral-200 text-neutral-500 font-medium"
-              />
-            </Toolbar>
-          </Container>
-        </AppBar>
+            {/* Search Form */}
+            <SearchForm onSearch={handleSearch} />
 
-        <Container maxWidth="lg" component="main" className="py-12">
-          {/* Hero Section */}
-          <motion.header
-            className="mb-12"
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Typography
-              variant="h3"
-              className="font-bold tracking-tight text-neutral-900 sm:text-5xl"
-              gutterBottom
-            >
-              Where to next?
-            </Typography>
-            <Typography
-              variant="h6"
-              className="text-neutral-500 font-normal max-w-2xl"
-            >
-              Find the best flight deals with real-time price trends and
-              advanced analytics.
-            </Typography>
-          </motion.header>
-
-          {/* Search Form */}
-          <SearchForm onSearch={handleSearch} />
-
-          {/* Loading State */}
-          {loading && (
-            <Box
-              className="mt-12"
-              role="status"
-              aria-live="polite"
-              aria-label="Loading flights"
-            >
-              <Typography
-                variant="h6"
-                className="text-center mb-8 text-blue-500 font-bold animate-pulse"
+            {/* Loading State */}
+            {loading && (
+              <Box
+                sx={{ mt: { xs: 4, sm: 6, md: 8 } }}
+                role="status"
+                aria-live="polite"
+                aria-label="Loading flights"
               >
-                Searching the best deals for you...
-              </Typography>
-              <FlightListSkeleton count={5} />
-            </Box>
-          )}
+                <Typography
+                  variant="h6"
+                  sx={{
+                    textAlign: 'center',
+                    mb: 4,
+                    color: 'primary.main',
+                    fontWeight: 700,
+                    animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    '@keyframes pulse': {
+                      '0%, 100%': { opacity: 1 },
+                      '50%': { opacity: 0.5 },
+                    },
+                  }}
+                >
+                  Searching the best deals for you...
+                </Typography>
+                <FlightListSkeleton count={isMobile ? 3 : 5} />
+              </Box>
+            )}
 
-          {/* Results Section */}
-          {!loading && hasResults && (
-            <Box className="mt-12">
-              <Box className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                {/* Left Sidebar: Graph & Filters */}
-                <Box className="lg:col-span-4">
-                  <Box className="sticky top-24 space-y-6">
-                    <PriceGraph data={flights} />
-
-                    <Paper
-                      elevation={0}
-                      className="p-6 rounded-3xl border border-neutral-200 bg-white"
+            {/* Results Section */}
+            {!loading && hasResults && (
+              <Box sx={{ mt: { xs: 4, sm: 6, md: 8 } }}>
+                <Box
+                  sx={{
+                    display: 'grid',
+                    gridTemplateColumns: { xs: '1fr', lg: '1fr 2fr' },
+                    gap: { xs: 4, sm: 6, lg: 8 },
+                  }}
+                >
+                  {/* Left Sidebar: Graph & Filters */}
+                  <Box>
+                    <Box
+                      sx={{
+                        position: { lg: 'sticky' },
+                        top: { lg: 96 },
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 3,
+                      }}
                     >
-                      <Typography
-                        variant="h6"
-                        className="font-bold mb-6 text-neutral-800"
-                      >
-                        Refine Results
-                      </Typography>
+                      <PriceGraph data={flights} />
 
-                      {/* Sort Tabs */}
-                      <Tabs
-                        value={sortBy}
-                        onChange={(e, v) => setSortBy(v)}
-                        className="mb-6 bg-neutral-50 rounded-xl p-1"
-                        indicatorColor="primary"
-                        aria-label="Sort flights by"
+                      <Paper
+                        elevation={0}
+                        sx={{
+                          p: { xs: 3, sm: 4 },
+                          borderRadius: 4,
+                          border: 1,
+                          borderColor: 'divider',
+                          bgcolor: 'background.paper',
+                        }}
                       >
-                        <Tab
-                          label="Cheapest"
-                          value="price"
-                          className="capitalize font-bold"
-                          aria-label="Sort by cheapest price"
-                        />
-                        <Tab
-                          label="Fastest"
-                          value="duration"
-                          className="capitalize font-bold"
-                          aria-label="Sort by fastest duration"
-                        />
-                      </Tabs>
+                        <Typography
+                          variant="h6"
+                          sx={{
+                            fontWeight: 700,
+                            mb: 3,
+                            color: 'text.primary',
+                          }}
+                        >
+                          Refine Results
+                        </Typography>
 
-                      {/* Price Slider */}
-                      <Typography
-                        variant="caption"
-                        className="text-neutral-400 uppercase tracking-widest font-bold"
-                        component="label"
-                        htmlFor="price-slider"
-                      >
-                        Max Budget: ${maxPrice}
-                      </Typography>
-                      <Slider
-                        id="price-slider"
-                        value={maxPrice}
-                        min={0}
-                        max={5000}
-                        step={50}
-                        onChange={(e, v) => setMaxPrice(v)}
-                        className="mt-2"
-                        aria-label="Maximum price filter"
-                        aria-valuemin={0}
-                        aria-valuemax={5000}
-                        aria-valuenow={maxPrice}
-                      />
-                      <Typography
-                        variant="caption"
-                        className="text-neutral-400 mt-2 block"
-                      >
-                        Showing {flights.length} flight
-                        {flights.length !== 1 ? 's' : ''} under ${maxPrice}
-                      </Typography>
-                    </Paper>
+                        {/* Sort Tabs */}
+                        <Tabs
+                          value={sortBy}
+                          onChange={(e, v) => setSortBy(v)}
+                          sx={{
+                            mb: 3,
+                            bgcolor: 'action.hover',
+                            borderRadius: 2,
+                            p: 0.5,
+                            minHeight: 44,
+                            '& .MuiTab-root': {
+                              minHeight: 40,
+                              borderRadius: 1.5,
+                              fontWeight: 700,
+                              fontSize: '0.875rem',
+                            },
+                          }}
+                          indicatorColor="primary"
+                          aria-label="Sort flights by"
+                        >
+                          <Tab
+                            label="Cheapest"
+                            value="price"
+                            aria-label="Sort by cheapest price"
+                          />
+                          <Tab
+                            label="Fastest"
+                            value="duration"
+                            aria-label="Sort by fastest duration"
+                          />
+                        </Tabs>
+
+                        {/* Price Slider */}
+                        <Typography
+                          variant="caption"
+                          component="label"
+                          htmlFor="price-slider"
+                          sx={{
+                            color: 'text.secondary',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.1em',
+                            fontWeight: 700,
+                            fontSize: '0.75rem',
+                          }}
+                        >
+                          Max Budget: ${maxPrice}
+                        </Typography>
+                        <Slider
+                          id="price-slider"
+                          value={maxPrice}
+                          min={0}
+                          max={5000}
+                          step={50}
+                          onChange={(e, v) => setMaxPrice(v)}
+                          sx={{ mt: 2 }}
+                          aria-label="Maximum price filter"
+                          aria-valuemin={0}
+                          aria-valuemax={5000}
+                          aria-valuenow={maxPrice}
+                        />
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: 'text.secondary',
+                            mt: 2,
+                            display: 'block',
+                          }}
+                        >
+                          Showing {flights.length} flight
+                          {flights.length !== 1 ? 's' : ''} under ${maxPrice}
+                        </Typography>
+                      </Paper>
+                    </Box>
+                  </Box>
+
+                  {/* Right Side: Flight List */}
+                  <Box>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        fontWeight: 700,
+                        mb: 3,
+                        color: 'text.primary',
+                      }}
+                      role="status"
+                      aria-live="polite"
+                    >
+                      Available Flights ({flights.length})
+                    </Typography>
+
+                    <AnimatePresence mode="popLayout">
+                      {flights.length > 0 ? (
+                        flights.map((flight, i) => (
+                          <motion.div
+                            key={flight.id || i}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            transition={{ delay: i * 0.05 }}
+                          >
+                            <FlightCard flight={flight} />
+                          </motion.div>
+                        ))
+                      ) : (
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                        >
+                          <Paper
+                            sx={{
+                              p: { xs: 6, sm: 8, md: 12 },
+                              borderRadius: 4,
+                              textAlign: 'center',
+                              border: 2,
+                              borderStyle: 'dashed',
+                              borderColor: 'divider',
+                              bgcolor: 'transparent',
+                            }}
+                          >
+                            <Typography sx={{ color: 'text.secondary' }}>
+                              No flights found in this price range. Try
+                              adjusting your filters.
+                            </Typography>
+                          </Paper>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </Box>
                 </Box>
-
-                {/* Right Side: Flight List */}
-                <Box className="lg:col-span-8">
-                  <Typography
-                    variant="h6"
-                    className="font-bold mb-6 text-neutral-800"
-                    role="status"
-                    aria-live="polite"
-                  >
-                    Available Flights ({flights.length})
-                  </Typography>
-
-                  <AnimatePresence mode="popLayout">
-                    {flights.length > 0 ? (
-                      flights.map((flight, i) => (
-                        <motion.div
-                          key={flight.id || i}
-                          initial={{ opacity: 0, x: 20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -20 }}
-                          transition={{ delay: i * 0.05 }}
-                        >
-                          <FlightCard flight={flight} />
-                        </motion.div>
-                      ))
-                    ) : (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                      >
-                        <Paper className="p-12 rounded-3xl text-center border-2 border-dashed border-neutral-200">
-                          <Typography className="text-neutral-400">
-                            No flights found in this price range. Try adjusting
-                            your filters.
-                          </Typography>
-                        </Paper>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </Box>
               </Box>
-            </Box>
-          )}
+            )}
 
-          {/* Empty State */}
-          {!loading && !hasResults && (
-            <Paper
-              variant="outlined"
-              className="mt-12 rounded-3xl border-2 border-dashed border-neutral-200 p-12 text-center bg-transparent"
-            >
-              <Typography variant="body1" className="text-neutral-400">
-                Ready for takeoff. Enter details above to see results.
-              </Typography>
-            </Paper>
-          )}
-        </Container>
+            {/* Empty State */}
+            {!loading && !hasResults && (
+              <Paper
+                variant="outlined"
+                sx={{
+                  mt: { xs: 4, sm: 6, md: 8 },
+                  borderRadius: 4,
+                  border: 2,
+                  borderStyle: 'dashed',
+                  borderColor: 'divider',
+                  p: { xs: 6, sm: 8, md: 12 },
+                  textAlign: 'center',
+                  bgcolor: 'transparent',
+                }}
+              >
+                <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+                  Ready for takeoff. Enter details above to see results.
+                </Typography>
+              </Paper>
+            )}
+          </Container>
 
-        {/* Error Notification */}
-        <Snackbar
-          open={showError}
-          autoHideDuration={6000}
-          onClose={() => setShowError(false)}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        >
-          <Alert
+          {/* Error Notification */}
+          <Snackbar
+            open={showError}
+            autoHideDuration={6000}
             onClose={() => setShowError(false)}
-            severity="error"
-            variant="filled"
-            className="rounded-xl"
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
           >
-            {error}
-          </Alert>
-        </Snackbar>
-      </Box>
-    </ErrorBoundary>
+            <Alert
+              onClose={() => setShowError(false)}
+              severity="error"
+              variant="filled"
+              sx={{ borderRadius: 3 }}
+            >
+              {error}
+            </Alert>
+          </Snackbar>
+        </Box>
+      </ErrorBoundary>
+    </ThemeProvider>
   );
 };
 

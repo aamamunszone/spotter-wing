@@ -8,10 +8,12 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { Paper, Typography, Box } from '@mui/material';
+import { Paper, Typography, Box, useTheme } from '@mui/material';
 import { motion } from 'motion/react';
 
 const PriceGraph = ({ data }) => {
+  const theme = useTheme();
+
   if (!data || data.length === 0) return null;
 
   const chartData = data.map((flight, index) => ({
@@ -34,61 +36,131 @@ const PriceGraph = ({ data }) => {
     >
       <Paper
         elevation={0}
-        className="p-6 rounded-3xl border border-neutral-200 bg-white mb-8"
         role="region"
         aria-label="Price insights chart"
+        sx={{
+          p: { xs: 3, sm: 4 },
+          borderRadius: 4,
+          border: 1,
+          borderColor: 'divider',
+          bgcolor: 'background.paper',
+          mb: 3,
+        }}
       >
-        <Box className="mb-4 flex justify-between items-center">
-          <Typography variant="h6" className="font-bold text-neutral-800">
+        <Box
+          sx={{
+            mb: 3,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 700,
+              color: 'text.primary',
+            }}
+          >
             Price Insights
           </Typography>
           <Typography
             variant="caption"
-            className="text-neutral-500 font-medium"
+            sx={{
+              color: 'text.secondary',
+              fontWeight: 600,
+            }}
           >
             {data.length} result{data.length !== 1 ? 's' : ''}
           </Typography>
         </Box>
 
         {/* Price Stats */}
-        <Box className="mb-4 flex gap-4 text-center">
-          <Box className="flex-1">
+        <Box
+          sx={{
+            mb: 3,
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: 2,
+            textAlign: 'center',
+          }}
+        >
+          <Box>
             <Typography
               variant="caption"
-              className="text-neutral-400 uppercase text-xs"
+              sx={{
+                color: 'text.secondary',
+                textTransform: 'uppercase',
+                fontSize: '0.7rem',
+                fontWeight: 700,
+                letterSpacing: '0.05em',
+              }}
             >
               Lowest
             </Typography>
-            <Typography variant="body2" className="font-bold text-green-600">
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 700,
+                color: 'success.main',
+                fontSize: '1rem',
+              }}
+            >
               ${minPrice.toFixed(0)}
             </Typography>
           </Box>
-          <Box className="flex-1">
+          <Box>
             <Typography
               variant="caption"
-              className="text-neutral-400 uppercase text-xs"
+              sx={{
+                color: 'text.secondary',
+                textTransform: 'uppercase',
+                fontSize: '0.7rem',
+                fontWeight: 700,
+                letterSpacing: '0.05em',
+              }}
             >
               Average
             </Typography>
-            <Typography variant="body2" className="font-bold text-blue-600">
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 700,
+                color: 'primary.main',
+                fontSize: '1rem',
+              }}
+            >
               ${avgPrice.toFixed(0)}
             </Typography>
           </Box>
-          <Box className="flex-1">
+          <Box>
             <Typography
               variant="caption"
-              className="text-neutral-400 uppercase text-xs"
+              sx={{
+                color: 'text.secondary',
+                textTransform: 'uppercase',
+                fontSize: '0.7rem',
+                fontWeight: 700,
+                letterSpacing: '0.05em',
+              }}
             >
               Highest
             </Typography>
-            <Typography variant="body2" className="font-bold text-red-600">
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 700,
+                color: 'error.main',
+                fontSize: '1rem',
+              }}
+            >
               ${maxPrice.toFixed(0)}
             </Typography>
           </Box>
         </Box>
 
-        <div
-          className="h-62.5 w-full"
+        <Box
+          sx={{ height: 250, width: '100%' }}
           role="img"
           aria-label={`Price trend chart showing ${data.length} flights ranging from $${minPrice.toFixed(0)} to $${maxPrice.toFixed(0)}`}
         >
@@ -96,28 +168,41 @@ const PriceGraph = ({ data }) => {
             <AreaChart data={chartData}>
               <defs>
                 <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#2563eb" stopOpacity={0.1} />
-                  <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
+                  <stop
+                    offset="5%"
+                    stopColor={theme.palette.primary.main}
+                    stopOpacity={0.2}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor={theme.palette.primary.main}
+                    stopOpacity={0}
+                  />
                 </linearGradient>
               </defs>
               <CartesianGrid
                 strokeDasharray="3 3"
                 vertical={false}
-                stroke="#f0f0f0"
+                stroke={theme.palette.divider}
               />
               <XAxis dataKey="name" hide />
               <YAxis
                 domain={['auto', 'auto']}
-                tick={{ fontSize: 12, fill: '#94a3b8' }}
+                tick={{
+                  fontSize: 12,
+                  fill: theme.palette.text.secondary,
+                }}
                 axisLine={false}
                 tickLine={false}
                 tickFormatter={(value) => `$${value}`}
               />
               <Tooltip
                 contentStyle={{
-                  borderRadius: '12px',
+                  borderRadius: 12,
                   border: 'none',
-                  boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+                  boxShadow: theme.shadows[3],
+                  backgroundColor: theme.palette.background.paper,
+                  color: theme.palette.text.primary,
                 }}
                 formatter={(value) => [`$${value}`, 'Price']}
                 labelFormatter={(label) => label}
@@ -125,7 +210,7 @@ const PriceGraph = ({ data }) => {
               <Area
                 type="monotone"
                 dataKey="price"
-                stroke="#2563eb"
+                stroke={theme.palette.primary.main}
                 strokeWidth={3}
                 fillOpacity={1}
                 fill="url(#colorPrice)"
@@ -133,7 +218,7 @@ const PriceGraph = ({ data }) => {
               />
             </AreaChart>
           </ResponsiveContainer>
-        </div>
+        </Box>
       </Paper>
     </motion.div>
   );
