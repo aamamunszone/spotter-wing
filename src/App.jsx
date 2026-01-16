@@ -31,7 +31,7 @@ const App = () => {
   // Theme state
   const [mode, setMode] = useState('light');
   const theme = useMemo(() => getAppTheme(mode), [mode]);
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
 
   // Toggle theme
   const toggleTheme = () => {
@@ -267,35 +267,59 @@ const App = () => {
               </Box>
             )}
 
-            {/* Results Section */}
+            {/* Results Section - Two Column Layout with Sticky Sidebar */}
             {!loading && hasResults && (
-              <Box sx={{ mt: { xs: 4, sm: 6, md: 8 } }}>
+              <Box
+                sx={{
+                  mt: { xs: 4, sm: 6, md: 8 },
+                  minHeight: '100vh',
+                }}
+              >
+                {/* 
+                  CSS Grid with align-items: flex-start
+                  This prevents the sidebar from stretching to match flight list height
+                */}
                 <Box
                   sx={{
                     display: 'grid',
-                    gridTemplateColumns: { xs: '1fr', lg: '1fr 2fr' },
-                    gap: { xs: 4, sm: 6, lg: 8 },
+                    gridTemplateColumns: { xs: '1fr', lg: '340px 1fr' },
+                    gap: { xs: 4, lg: 6 },
+                    alignItems: 'flex-start', // CRITICAL: Prevents sidebar stretching
                   }}
                 >
-                  {/* Left Sidebar: Graph & Filters */}
-                  <Box>
+                  {/* 
+                    Left Sidebar - Sticky Wrapper
+                    position: sticky + top: 100px + align-self: flex-start
+                  */}
+                  <Box
+                    sx={{
+                      position: { xs: 'relative', lg: 'sticky' },
+                      top: { lg: '100px' },
+                      alignSelf: 'flex-start', // CRITICAL: Prevents stretching
+                      height: 'fit-content', // Only as tall as content
+                      zIndex: 10,
+                    }}
+                  >
+                    {/* Sidebar Content Container */}
                     <Box
                       sx={{
-                        position: { lg: 'sticky' },
-                        top: { lg: 120 },
                         display: 'flex',
                         flexDirection: 'column',
                         gap: 3,
                       }}
                     >
+                      {/* Price Graph */}
                       <PriceGraph data={flights} />
 
+                      {/* Filter Controls */}
                       <Paper
                         elevation={0}
                         sx={{
                           p: { xs: 3, sm: 4 },
                           borderRadius: 4,
                           bgcolor: 'background.paper',
+                          backdropFilter: 'blur(15px)',
+                          WebkitBackdropFilter: 'blur(15px)',
                         }}
                       >
                         <Typography
@@ -328,6 +352,7 @@ const App = () => {
                               borderRadius: 1.5,
                               fontWeight: 700,
                               fontSize: '0.875rem',
+                              flex: 1,
                             },
                           }}
                           indicatorColor="primary"
@@ -346,38 +371,57 @@ const App = () => {
                         </Tabs>
 
                         {/* Price Slider */}
+                        <Box sx={{ mb: 2 }}>
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              mb: 1,
+                            }}
+                          >
+                            <Typography
+                              variant="caption"
+                              component="label"
+                              htmlFor="price-slider"
+                              sx={{
+                                color: 'text.secondary',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.1em',
+                                fontWeight: 700,
+                                fontSize: '0.7rem',
+                              }}
+                            >
+                              Max Budget
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                fontWeight: 700,
+                                color: 'primary.main',
+                              }}
+                            >
+                              ${maxPrice}
+                            </Typography>
+                          </Box>
+                          <Slider
+                            id="price-slider"
+                            value={maxPrice}
+                            min={0}
+                            max={5000}
+                            step={50}
+                            onChange={(e, v) => setMaxPrice(v)}
+                            aria-label="Maximum price filter"
+                            aria-valuemin={0}
+                            aria-valuemax={5000}
+                            aria-valuenow={maxPrice}
+                          />
+                        </Box>
+
                         <Typography
                           variant="caption"
-                          component="label"
-                          htmlFor="price-slider"
                           sx={{
                             color: 'text.secondary',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.1em',
-                            fontWeight: 700,
-                            fontSize: '0.75rem',
-                          }}
-                        >
-                          Max Budget: ${maxPrice}
-                        </Typography>
-                        <Slider
-                          id="price-slider"
-                          value={maxPrice}
-                          min={0}
-                          max={5000}
-                          step={50}
-                          onChange={(e, v) => setMaxPrice(v)}
-                          sx={{ mt: 2 }}
-                          aria-label="Maximum price filter"
-                          aria-valuemin={0}
-                          aria-valuemax={5000}
-                          aria-valuenow={maxPrice}
-                        />
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            color: 'text.secondary',
-                            mt: 2,
                             display: 'block',
                           }}
                         >
@@ -388,7 +432,7 @@ const App = () => {
                     </Box>
                   </Box>
 
-                  {/* Right Side: Flight List */}
+                  {/* Right Side - Flight List (scrolls independently) */}
                   <Box>
                     <Typography
                       variant="h6"
@@ -403,43 +447,59 @@ const App = () => {
                       Available Flights ({flights.length})
                     </Typography>
 
-                    <AnimatePresence mode="popLayout">
-                      {flights.length > 0 ? (
-                        flights.map((flight, i) => (
+                    {/* Flight Cards with Layout Animation */}
+                    <motion.div
+                      layout
+                      transition={{ duration: 0.3, ease: 'easeInOut' }}
+                    >
+                      <AnimatePresence mode="popLayout">
+                        {flights.length > 0 ? (
+                          flights.map((flight, i) => (
+                            <motion.div
+                              key={flight.id || `flight-${i}`}
+                              layout
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{
+                                opacity: 0,
+                                scale: 0.95,
+                                transition: { duration: 0.2 },
+                              }}
+                              transition={{
+                                layout: { duration: 0.3, ease: 'easeInOut' },
+                                opacity: { duration: 0.2 },
+                                y: { duration: 0.2 },
+                              }}
+                            >
+                              <FlightCard flight={flight} />
+                            </motion.div>
+                          ))
+                        ) : (
                           <motion.div
-                            key={flight.id || i}
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            transition={{ delay: i * 0.05 }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.3 }}
                           >
-                            <FlightCard flight={flight} />
+                            <Paper
+                              sx={{
+                                p: { xs: 6, sm: 8, md: 12 },
+                                borderRadius: 4,
+                                textAlign: 'center',
+                                border: 2,
+                                borderStyle: 'dashed',
+                                borderColor: 'divider',
+                                bgcolor: 'background.paper',
+                              }}
+                            >
+                              <Typography sx={{ color: 'text.secondary' }}>
+                                No flights found in this price range. Try
+                                adjusting your filters.
+                              </Typography>
+                            </Paper>
                           </motion.div>
-                        ))
-                      ) : (
-                        <motion.div
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                        >
-                          <Paper
-                            sx={{
-                              p: { xs: 6, sm: 8, md: 12 },
-                              borderRadius: 4,
-                              textAlign: 'center',
-                              border: 2,
-                              borderStyle: 'dashed',
-                              borderColor: 'divider',
-                              bgcolor: 'background.paper',
-                            }}
-                          >
-                            <Typography sx={{ color: 'text.secondary' }}>
-                              No flights found in this price range. Try
-                              adjusting your filters.
-                            </Typography>
-                          </Paper>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                        )}
+                      </AnimatePresence>
+                    </motion.div>
                   </Box>
                 </Box>
               </Box>
