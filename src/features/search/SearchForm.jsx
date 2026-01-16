@@ -1,105 +1,150 @@
-import React, { useState } from 'react';
-import { TextField, Button, Autocomplete, Paper, Stack } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import {
+  TextField,
+  Button,
+  Autocomplete,
+  Paper,
+  Stack,
+  CircularProgress,
+} from '@mui/material';
+import { getAirports } from '../../api/amadeus';
 import SearchIcon from '@mui/icons-material/Search';
-import FlightTakeoffIcon from '@mui/icons-material/FlightTakeoff';
-import FlightLandIcon from '@mui/icons-material/FlightLand';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-
-const airPorts = [
-  { label: 'New York (JFK)', code: 'JFK' },
-  { label: 'London (LHR)', code: 'LHR' },
-  { label: 'Dubai (DXB)', code: 'DXB' },
-  { label: 'Paris (CDG)', code: 'CDG' },
-  { label: 'Singapore (SIN)', code: 'SIN' },
-  { label: 'Dhaka (DAC)', code: 'DAC' },
-];
+import { useDebounce } from '../../hooks/useDebounce';
 
 const SearchForm = ({ onSearch }) => {
-  const [from, setFrom] = useState(null);
-  const [to, setTo] = useState(null);
-  const [date, setDate] = useState('');
+  const [options, setOptions] = useState({ from: [], to: [] });
+  const [loading, setLoading] = useState({ from: false, to: false });
+  const [formData, setFormData] = useState({ from: null, to: null, date: '' });
+  const [inputValues, setInputValues] = useState({ from: '', to: '' });
+
+  // Debounce the input values to reduce API calls
+  const debouncedFromInput = useDebounce(inputValues.from, 400);
+  const debouncedToInput = useDebounce(inputValues.to, 400);
+
+  // Fetch airports when debounced input changes
+  useEffect(() => {
+    if (debouncedFromInput && debouncedFromInput.length >= 2) {
+      fetchOptions(debouncedFromInput, 'from');
+    }
+  }, [debouncedFromInput]);
+
+  useEffect(() => {
+    if (debouncedToInput && debouncedToInput.length >= 2) {
+      fetchOptions(debouncedToInput, 'to');
+    }
+  }, [debouncedToInput]);
+
+  const fetchOptions = async (keyword, type) => {
+    setLoading((prev) => ({ ...prev, [type]: true }));
+    const results = await getAirports(keyword);
+    setOptions((prev) => ({ ...prev, [type]: results }));
+    setLoading((prev) => ({ ...prev, [type]: false }));
+  };
 
   const handleSearch = () => {
-    if (from && to && date) {
-      onSearch(from.code, to.code, date);
-    } else {
-      alert('Please fill all fields!');
+    if (!formData.from || !formData.to || !formData.date) {
+      return; // Form validation handled by hook
     }
+    onSearch(formData.from.code, formData.to.code, formData.date);
   };
+
+  // Get today's date for min date validation
+  const today = new Date().toISOString().split('T')[0];
 
   return (
     <Paper
       elevation={0}
-      className="p-6 rounded-3xl border border-neutral-200 bg-white shadow-xl shadow-blue-500/5"
+      className="p-4 md:p-8 rounded-4xl border border-neutral-200 bg-white/50 backdrop-blur-xl shadow-2xl shadow-blue-500/10"
+      role="search"
+      aria-label="Flight search form"
     >
-      <Stack
-        direction={{ xs: 'column', md: 'row' }}
-        spacing={3}
-        alignItems="center"
-      >
-        {/* Origin */}
+      <Stack direction={{ xs: 'column', lg: 'row' }} spacing={2}>
         <Autocomplete
           fullWidth
-          options={airPorts}
-          onChange={(e, val) => setFrom(val)}
+          options={options.from}
+          loading={loading.from}
+          value={formData.from}
+          onInputChange={(e, val) =>
+            setInputValues((prev) => ({ ...prev, from: val }))
+          }
+          onChange={(e, val) => setFormData({ ...formData, from: val })}
+          getOptionLabel={(option) => option.label || ''}
+          isOptionEqualToValue={(option, value) => option.code === value.code}
           renderInput={(params) => (
             <TextField
               {...params}
-              label="From"
-              variant="outlined"
+              label="Origin Airport"
+              variant="filled"
+              required
+              aria-label="Origin airport"
+              aria-describedby="origin-helper-text"
               InputProps={{
                 ...params.InputProps,
-                startAdornment: (
-                  <FlightTakeoffIcon className="mr-2 text-blue-500" />
+                endAdornment: (
+                  <>
+                    {loading.from ? <CircularProgress size={20} /> : null}
+                    {params.InputProps.endAdornment}
+                  </>
                 ),
               }}
             />
           )}
         />
-
-        {/* Destination */}
         <Autocomplete
           fullWidth
-          options={airPorts}
-          onChange={(e, val) => setTo(val)}
+          options={options.to}
+          loading={loading.to}
+          value={formData.to}
+          onInputChange={(e, val) =>
+            setInputValues((prev) => ({ ...prev, to: val }))
+          }
+          onChange={(e, val) => setFormData({ ...formData, to: val })}
+          getOptionLabel={(option) => option.label || ''}
+          isOptionEqualToValue={(option, value) => option.code === value.code}
           renderInput={(params) => (
             <TextField
               {...params}
-              label="To"
-              variant="outlined"
+              label="Destination Airport"
+              variant="filled"
+              required
+              aria-label="Destination airport"
+              aria-describedby="destination-helper-text"
               InputProps={{
                 ...params.InputProps,
-                startAdornment: (
-                  <FlightLandIcon className="mr-2 text-blue-500" />
+                endAdornment: (
+                  <>
+                    {loading.to ? <CircularProgress size={20} /> : null}
+                    {params.InputProps.endAdornment}
+                  </>
                 ),
               }}
             />
           )}
         />
-
-        {/* Date Picker */}
         <TextField
           fullWidth
           type="date"
-          label="Departure"
-          InputLabelProps={{ shrink: true }}
-          onChange={(e) => setDate(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <CalendarMonthIcon className="mr-2 text-blue-500" />
-            ),
+          variant="filled"
+          label="Departure Date"
+          required
+          value={formData.date}
+          inputProps={{
+            min: today,
+            'aria-label': 'Departure date',
           }}
+          InputLabelProps={{ shrink: true }}
+          onChange={(e) => setFormData({ ...formData, date: e.target.value })}
         />
-
-        {/* Search Button */}
         <Button
           variant="contained"
-          size="large"
+          disableElevation
           onClick={handleSearch}
-          className="h-14 px-10 bg-blue-600 hover:bg-blue-700 rounded-xl normal-case text-lg font-bold shadow-lg shadow-blue-600/30"
-          startIcon={<SearchIcon />}
+          disabled={!formData.from || !formData.to || !formData.date}
+          aria-label="Search flights"
+          className="h-14 px-12 bg-blue-600 hover:bg-black rounded-xl transition-all duration-500 font-bold text-lg disabled:bg-neutral-300"
         >
-          Search
+          <SearchIcon aria-hidden="true" />
+          <span className="ml-2 hidden sm:inline">Search</span>
         </Button>
       </Stack>
     </Paper>
