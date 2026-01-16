@@ -1,4 +1,3 @@
-import React from 'react';
 import { IconButton, Tooltip } from '@mui/material';
 import { motion } from 'motion/react';
 import LightModeIcon from '@mui/icons-material/LightMode';

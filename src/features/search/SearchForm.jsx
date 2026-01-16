@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   TextField,
   Button,
@@ -21,25 +21,26 @@ const SearchForm = ({ onSearch }) => {
   const debouncedFromInput = useDebounce(inputValues.from, 400);
   const debouncedToInput = useDebounce(inputValues.to, 400);
 
+  // Fetch airport options
+  const fetchOptions = useCallback(async (keyword, type) => {
+    setLoading((prev) => ({ ...prev, [type]: true }));
+    const results = await getAirports(keyword);
+    setOptions((prev) => ({ ...prev, [type]: results }));
+    setLoading((prev) => ({ ...prev, [type]: false }));
+  }, []);
+
   // Fetch airports when debounced input changes
   useEffect(() => {
     if (debouncedFromInput && debouncedFromInput.length >= 2) {
       fetchOptions(debouncedFromInput, 'from');
     }
-  }, [debouncedFromInput]);
+  }, [debouncedFromInput, fetchOptions]);
 
   useEffect(() => {
     if (debouncedToInput && debouncedToInput.length >= 2) {
       fetchOptions(debouncedToInput, 'to');
     }
-  }, [debouncedToInput]);
-
-  const fetchOptions = async (keyword, type) => {
-    setLoading((prev) => ({ ...prev, [type]: true }));
-    const results = await getAirports(keyword);
-    setOptions((prev) => ({ ...prev, [type]: results }));
-    setLoading((prev) => ({ ...prev, [type]: false }));
-  };
+  }, [debouncedToInput, fetchOptions]);
 
   const handleSearch = () => {
     if (!formData.from || !formData.to || !formData.date) {

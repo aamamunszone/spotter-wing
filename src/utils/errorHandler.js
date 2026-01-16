@@ -49,17 +49,18 @@ export const getErrorMessage = (error) => {
 };
 
 /**
- * Log error to console with context
+ * Log error to console with context (only in development)
  * @param {string} context - Where the error occurred
  * @param {Error} error - The error object
  */
 export const logError = (context, error) => {
-  console.error(`[${context}]`, {
-    message: error.message,
-    status: error.response?.status,
-    data: error.response?.data,
-    stack: error.stack,
-  });
+  if (import.meta.env.DEV) {
+    console.error(`[${context}]`, {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data,
+    });
+  }
 };
 
 /**

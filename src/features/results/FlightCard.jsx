@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { Paper, Typography, Box, Button } from '@mui/material';
 import ConnectingAirportsIcon from '@mui/icons-material/ConnectingAirports';
 import {

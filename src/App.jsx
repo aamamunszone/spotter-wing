@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   AppBar,
   Box,
@@ -54,11 +54,15 @@ const App = () => {
   const [showError, setShowError] = useState(false);
 
   // Show error notification when error changes
-  React.useEffect(() => {
+  const handleErrorChange = useCallback(() => {
     if (error) {
       setShowError(true);
     }
   }, [error]);
+
+  useEffect(() => {
+    handleErrorChange();
+  }, [handleErrorChange]);
 
   return (
     <ThemeProvider theme={theme}>

@@ -6,10 +6,10 @@ const API_KEY = import.meta.env.VITE_AMADEUS_API_KEY;
 const API_SECRET = import.meta.env.VITE_AMADEUS_API_SECRET;
 const BASE_URL = 'https://test.api.amadeus.com';
 
-// Validate credentials on load
-if (!API_KEY || !API_SECRET) {
-  console.error(
-    'Missing Amadeus API credentials. Please check your .env.local file.',
+// Validate credentials on load (only warn in development)
+if (import.meta.env.DEV && (!API_KEY || !API_SECRET)) {
+  console.warn(
+    '[Spotter-Wing] Missing Amadeus API credentials. Please check your .env.local file.',
   );
 }
 
