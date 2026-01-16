@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   AppBar,
   Box,
@@ -9,8 +9,22 @@ import {
   Typography,
 } from '@mui/material';
 import FlightTakeoffIcon from '@mui/icons-material/FlightTakeoff';
+import { searchFlights } from './api/amadeus';
 
 const App = () => {
+  useEffect(() => {
+    const testFetch = async () => {
+      try {
+        const data = await searchFlights('JFK', 'LHR', '2026-06-15');
+        console.log('Flight Data Received:', data);
+      } catch (err) {
+        console.error('Fetch Failed:', err);
+      }
+    };
+
+    testFetch();
+  }, []);
+
   return (
     <Box className="min-h-screen bg-neutral-50 antialiased">
       {/* Navbar with MUI AppBar */}
