@@ -11,6 +11,7 @@ import {
 import FlightTakeoffIcon from '@mui/icons-material/FlightTakeoff';
 import { searchFlights } from './api/amadeus';
 import SearchForm from './features/search/SearchForm';
+import FlightCard from './features/results/FlightCard';
 
 const App = () => {
   const [flights, setFlights] = useState([]);
@@ -90,17 +91,24 @@ const App = () => {
           </Box>
 
           {/* Results Area */}
-          {loading ? (
-            <p className="text-center text-blue-600 animate-pulse font-bold">
-              Searching the skies...
-            </p>
-          ) : (
-            <p className="text-center text-neutral-400">
-              {flights.length > 0
-                ? `Found ${flights.length} flights!`
-                : 'Ready for takeoff. Enter details above.'}
-            </p>
-          )}
+          <Box className="mt-10">
+            {loading ? (
+              <Box className="text-center py-20">
+                <Typography
+                  variant="h6"
+                  className="animate-pulse text-blue-500"
+                >
+                  Searching the best deals for you...
+                </Typography>
+              </Box>
+            ) : (
+              <Box className="grid grid-cols-1 gap-4">
+                {flights.map((flight, index) => (
+                  <FlightCard key={index} flight={flight} />
+                ))}
+              </Box>
+            )}
+          </Box>
         </Paper>
       </Container>
     </Box>
