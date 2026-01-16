@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   AppBar,
   Box,
@@ -10,20 +10,24 @@ import {
 } from '@mui/material';
 import FlightTakeoffIcon from '@mui/icons-material/FlightTakeoff';
 import { searchFlights } from './api/amadeus';
+import SearchForm from './features/search/SearchForm';
 
 const App = () => {
-  useEffect(() => {
-    const testFetch = async () => {
-      try {
-        const data = await searchFlights('JFK', 'LHR', '2026-06-15');
-        console.log('Flight Data Received:', data);
-      } catch (err) {
-        console.error('Fetch Failed:', err);
-      }
-    };
+  const [flights, setFlights] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-    testFetch();
-  }, []);
+  const handleFlightSearch = async (origin, destination, date) => {
+    setLoading(true);
+    try {
+      const data = await searchFlights(origin, destination, date);
+      setFlights(data);
+      console.log('Search Results:', data);
+    } catch (err) {
+      alert('Failed to fetch flights. Check console.', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Box className="min-h-screen bg-neutral-50 antialiased">
@@ -75,22 +79,28 @@ const App = () => {
           </Typography>
         </header>
 
-        {/* Work in Progress Area using MUI Paper */}
+        {/* Main Area using MUI Paper */}
         <Paper
           variant="outlined"
           className="rounded-3xl border-2 border-dashed border-neutral-200 p-20 text-center bg-transparent"
         >
-          <Box className="flex flex-col items-center gap-4">
-            <Box className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center animate-pulse">
-              <FlightTakeoffIcon className="text-blue-400" fontSize="large" />
-            </Box>
-            <Typography
-              variant="body1"
-              className="text-neutral-400 font-medium"
-            >
-              Ready for takeoff. Engine warm-up in progress...
-            </Typography>
+          {/* Search Form Integration */}
+          <Box className="mb-12">
+            <SearchForm onSearch={handleFlightSearch} />
           </Box>
+
+          {/* Results Area */}
+          {loading ? (
+            <p className="text-center text-blue-600 animate-pulse font-bold">
+              Searching the skies...
+            </p>
+          ) : (
+            <p className="text-center text-neutral-400">
+              {flights.length > 0
+                ? `Found ${flights.length} flights!`
+                : 'Ready for takeoff. Enter details above.'}
+            </p>
+          )}
         </Paper>
       </Container>
     </Box>
