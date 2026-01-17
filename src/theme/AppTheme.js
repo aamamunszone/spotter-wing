@@ -194,29 +194,41 @@ export const getAppTheme = (mode) => {
               borderRadius: 12,
               backgroundColor:
                 mode === 'light'
-                  ? 'rgba(241, 245, 249, 0.6)'
-                  : 'rgba(51, 65, 85, 0.6)',
+                  ? 'rgba(0, 0, 0, 0.02)'
+                  : 'rgba(255, 255, 255, 0.05)',
               backdropFilter: 'blur(10px)',
               WebkitBackdropFilter: 'blur(10px)',
               border:
                 mode === 'light'
-                  ? '1px solid rgba(255, 255, 255, 0.3)'
+                  ? '1px solid rgba(0, 0, 0, 0.05)'
                   : '1px solid rgba(255, 255, 255, 0.1)',
+              transition: 'all 0.3s ease',
+              '&:before': {
+                display: 'none', // Remove underline
+              },
+              '&:after': {
+                display: 'none', // Remove underline
+              },
               '&:hover': {
                 backgroundColor:
                   mode === 'light'
-                    ? 'rgba(226, 232, 240, 0.7)'
-                    : 'rgba(71, 85, 105, 0.7)',
+                    ? 'rgba(0, 0, 0, 0.03)'
+                    : 'rgba(255, 255, 255, 0.07)',
+                borderColor:
+                  mode === 'light'
+                    ? 'rgba(0, 0, 0, 0.08)'
+                    : 'rgba(255, 255, 255, 0.15)',
               },
               '&.Mui-focused': {
                 backgroundColor:
                   mode === 'light'
-                    ? 'rgba(226, 232, 240, 0.8)'
-                    : 'rgba(71, 85, 105, 0.8)',
-                border:
+                    ? 'rgba(0, 0, 0, 0.04)'
+                    : 'rgba(255, 255, 255, 0.08)',
+                borderColor: mode === 'light' ? '#2563EB' : '#3B82F6',
+                boxShadow:
                   mode === 'light'
-                    ? '1px solid rgba(37, 99, 235, 0.5)'
-                    : '1px solid rgba(59, 130, 246, 0.5)',
+                    ? '0 0 0 3px rgba(37, 99, 235, 0.1)'
+                    : '0 0 0 3px rgba(59, 130, 246, 0.15)',
               },
             },
           },

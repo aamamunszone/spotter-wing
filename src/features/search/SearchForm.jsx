@@ -3,7 +3,7 @@ import {
   TextField,
   Button,
   Autocomplete,
-  Paper,
+  Box,
   Stack,
   CircularProgress,
 } from '@mui/material';
@@ -53,25 +53,20 @@ const SearchForm = ({ onSearch }) => {
   const today = new Date().toISOString().split('T')[0];
 
   return (
-    <Paper
-      elevation={0}
+    <Box
       role="search"
       aria-label="Flight search form"
       sx={{
-        p: { xs: 3, sm: 4 },
-        borderRadius: 4,
-        bgcolor: 'background.paper',
-        backdropFilter: 'blur(15px)',
-        WebkitBackdropFilter: 'blur(15px)',
-        boxShadow: (theme) =>
-          theme.palette.mode === 'light'
-            ? '0 20px 40px rgba(37, 99, 235, 0.15)'
-            : '0 20px 40px rgba(0, 0, 0, 0.4)',
+        p: { xs: 2, sm: 2.5 },
+        borderRadius: 3,
+        bgcolor: 'transparent',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
       }}
     >
       <Stack
         direction={{ xs: 'column', md: 'row' }}
-        spacing={{ xs: 2, md: 2 }}
+        spacing={{ xs: 1.5, md: 2 }}
         sx={{ alignItems: { md: 'flex-end' } }}
       >
         <Autocomplete
@@ -88,19 +83,58 @@ const SearchForm = ({ onSearch }) => {
           renderInput={(params) => (
             <TextField
               {...params}
-              label="Origin Airport"
+              label="From"
               variant="filled"
               required
+              size="small"
               aria-label="Origin airport"
               aria-describedby="origin-helper-text"
               InputProps={{
                 ...params.InputProps,
+                disableUnderline: true,
                 endAdornment: (
                   <>
-                    {loading.from ? <CircularProgress size={20} /> : null}
+                    {loading.from ? <CircularProgress size={18} /> : null}
                     {params.InputProps.endAdornment}
                   </>
                 ),
+              }}
+              sx={{
+                '& .MuiFilledInput-root': {
+                  bgcolor: (theme) =>
+                    theme.palette.mode === 'light'
+                      ? 'rgba(0, 0, 0, 0.02)'
+                      : 'rgba(255, 255, 255, 0.05)',
+                  backdropFilter: 'blur(10px)',
+                  WebkitBackdropFilter: 'blur(10px)',
+                  border: (theme) =>
+                    theme.palette.mode === 'light'
+                      ? '1px solid rgba(0, 0, 0, 0.05)'
+                      : '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '12px',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    bgcolor: (theme) =>
+                      theme.palette.mode === 'light'
+                        ? 'rgba(0, 0, 0, 0.03)'
+                        : 'rgba(255, 255, 255, 0.07)',
+                    borderColor: (theme) =>
+                      theme.palette.mode === 'light'
+                        ? 'rgba(0, 0, 0, 0.08)'
+                        : 'rgba(255, 255, 255, 0.15)',
+                  },
+                  '&.Mui-focused': {
+                    bgcolor: (theme) =>
+                      theme.palette.mode === 'light'
+                        ? 'rgba(0, 0, 0, 0.04)'
+                        : 'rgba(255, 255, 255, 0.08)',
+                    borderColor: 'primary.main',
+                    boxShadow: (theme) =>
+                      theme.palette.mode === 'light'
+                        ? '0 0 0 3px rgba(37, 99, 235, 0.1)'
+                        : '0 0 0 3px rgba(59, 130, 246, 0.15)',
+                  },
+                },
               }}
             />
           )}
@@ -119,19 +153,58 @@ const SearchForm = ({ onSearch }) => {
           renderInput={(params) => (
             <TextField
               {...params}
-              label="Destination Airport"
+              label="To"
               variant="filled"
               required
+              size="small"
               aria-label="Destination airport"
               aria-describedby="destination-helper-text"
               InputProps={{
                 ...params.InputProps,
+                disableUnderline: true,
                 endAdornment: (
                   <>
-                    {loading.to ? <CircularProgress size={20} /> : null}
+                    {loading.to ? <CircularProgress size={18} /> : null}
                     {params.InputProps.endAdornment}
                   </>
                 ),
+              }}
+              sx={{
+                '& .MuiFilledInput-root': {
+                  bgcolor: (theme) =>
+                    theme.palette.mode === 'light'
+                      ? 'rgba(0, 0, 0, 0.02)'
+                      : 'rgba(255, 255, 255, 0.05)',
+                  backdropFilter: 'blur(10px)',
+                  WebkitBackdropFilter: 'blur(10px)',
+                  border: (theme) =>
+                    theme.palette.mode === 'light'
+                      ? '1px solid rgba(0, 0, 0, 0.05)'
+                      : '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '12px',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    bgcolor: (theme) =>
+                      theme.palette.mode === 'light'
+                        ? 'rgba(0, 0, 0, 0.03)'
+                        : 'rgba(255, 255, 255, 0.07)',
+                    borderColor: (theme) =>
+                      theme.palette.mode === 'light'
+                        ? 'rgba(0, 0, 0, 0.08)'
+                        : 'rgba(255, 255, 255, 0.15)',
+                  },
+                  '&.Mui-focused': {
+                    bgcolor: (theme) =>
+                      theme.palette.mode === 'light'
+                        ? 'rgba(0, 0, 0, 0.04)'
+                        : 'rgba(255, 255, 255, 0.08)',
+                    borderColor: 'primary.main',
+                    boxShadow: (theme) =>
+                      theme.palette.mode === 'light'
+                        ? '0 0 0 3px rgba(37, 99, 235, 0.1)'
+                        : '0 0 0 3px rgba(59, 130, 246, 0.15)',
+                  },
+                },
               }}
             />
           )}
@@ -140,15 +213,56 @@ const SearchForm = ({ onSearch }) => {
           fullWidth
           type="date"
           variant="filled"
-          label="Departure Date"
+          label="Date"
           required
+          size="small"
           value={formData.date}
           inputProps={{
             min: today,
             'aria-label': 'Departure date',
           }}
           InputLabelProps={{ shrink: true }}
+          InputProps={{
+            disableUnderline: true,
+          }}
           onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+          sx={{
+            '& .MuiFilledInput-root': {
+              bgcolor: (theme) =>
+                theme.palette.mode === 'light'
+                  ? 'rgba(0, 0, 0, 0.02)'
+                  : 'rgba(255, 255, 255, 0.05)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              border: (theme) =>
+                theme.palette.mode === 'light'
+                  ? '1px solid rgba(0, 0, 0, 0.05)'
+                  : '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '12px',
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                bgcolor: (theme) =>
+                  theme.palette.mode === 'light'
+                    ? 'rgba(0, 0, 0, 0.03)'
+                    : 'rgba(255, 255, 255, 0.07)',
+                borderColor: (theme) =>
+                  theme.palette.mode === 'light'
+                    ? 'rgba(0, 0, 0, 0.08)'
+                    : 'rgba(255, 255, 255, 0.15)',
+              },
+              '&.Mui-focused': {
+                bgcolor: (theme) =>
+                  theme.palette.mode === 'light'
+                    ? 'rgba(0, 0, 0, 0.04)'
+                    : 'rgba(255, 255, 255, 0.08)',
+                borderColor: 'primary.main',
+                boxShadow: (theme) =>
+                  theme.palette.mode === 'light'
+                    ? '0 0 0 3px rgba(37, 99, 235, 0.1)'
+                    : '0 0 0 3px rgba(59, 130, 246, 0.15)',
+              },
+            },
+          }}
         />
         <Button
           variant="contained"
@@ -157,35 +271,51 @@ const SearchForm = ({ onSearch }) => {
           disabled={!formData.from || !formData.to || !formData.date}
           aria-label="Search flights"
           sx={{
-            height: { xs: 48, md: 56 },
-            px: { xs: 4, md: 6 },
-            minWidth: { xs: '100%', md: 140 },
-            fontSize: { xs: '1rem', md: '1.125rem' },
+            height: { xs: 44, md: 48 },
+            px: { xs: 4, md: 5 },
+            minWidth: { xs: '100%', md: 120 },
+            fontSize: '0.95rem',
             fontWeight: 700,
-            borderRadius: 3,
+            borderRadius: '12px',
             transition: 'all 0.3s ease',
-            background: (theme) =>
+            textTransform: 'none',
+            bgcolor: (theme) =>
+              theme.palette.mode === 'light' ? '#1E40AF' : '#2563EB',
+            color: '#FFFFFF',
+            boxShadow: (theme) =>
               theme.palette.mode === 'light'
-                ? 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)'
-                : 'linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%)',
+                ? '0 4px 14px 0 rgba(30, 64, 175, 0.39)'
+                : '0 4px 14px 0 rgba(37, 99, 235, 0.39)',
             '&:hover': {
+              bgcolor: (theme) =>
+                theme.palette.mode === 'light' ? '#1E3A8A' : '#1D4ED8',
               transform: 'translateY(-2px)',
               boxShadow: (theme) =>
                 theme.palette.mode === 'light'
-                  ? '0 12px 28px rgba(37, 99, 235, 0.4)'
-                  : '0 12px 28px rgba(59, 130, 246, 0.5)',
+                  ? '0 6px 20px 0 rgba(30, 64, 175, 0.5)'
+                  : '0 6px 20px 0 rgba(37, 99, 235, 0.5)',
+            },
+            '&:active': {
+              transform: 'translateY(0)',
             },
             '&:disabled': {
-              background: 'action.disabledBackground',
-              color: 'action.disabled',
+              bgcolor: (theme) =>
+                theme.palette.mode === 'light'
+                  ? 'rgba(0, 0, 0, 0.12)'
+                  : 'rgba(255, 255, 255, 0.12)',
+              color: (theme) =>
+                theme.palette.mode === 'light'
+                  ? 'rgba(0, 0, 0, 0.26)'
+                  : 'rgba(255, 255, 255, 0.3)',
+              boxShadow: 'none',
             },
           }}
         >
-          <SearchIcon aria-hidden="true" />
-          <span style={{ marginLeft: 8 }}>Search</span>
+          <SearchIcon aria-hidden="true" sx={{ fontSize: 20 }} />
+          <span style={{ marginLeft: 6 }}>Search</span>
         </Button>
       </Stack>
-    </Paper>
+    </Box>
   );
 };
 
